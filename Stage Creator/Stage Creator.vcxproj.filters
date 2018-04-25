@@ -21,10 +21,22 @@
     <ClCompile Include="AllegroClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CursesClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllegroClass.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CursesClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

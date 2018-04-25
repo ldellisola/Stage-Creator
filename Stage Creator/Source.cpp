@@ -1,4 +1,6 @@
 #include "AllegroClass.h"
+#include "CursesClass.h"
+#include "UserHandler.h"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -23,8 +25,6 @@ void writeFile(const char * fileName, int matrix[ROWS][COLS]);
 void readFile(const char * fileName, int matrix[ROWS][COLS]);
 
 int main() {
-	AllegroClass allegro(16 * SQUARE, 12 * SQUARE + CONFIRMBOX_H, 60.0);
-	ALLEGRO_FONT * font = allegro.loadFont("mont.ttf", 50);
 
 	int matrix[ROWS][COLS];
 
@@ -33,92 +33,131 @@ int main() {
 			matrix[i][a] = 0;
 		}
 	}
+	string fileName;
+	bool leave = false;
+	bool valid = false;
 
-	
-	
-	ALLEGRO_BITMAP * curr = al_get_target_bitmap();
-	ALLEGRO_BITMAP * confirmBox = al_create_bitmap(16 * SQUARE, CONFIRMBOX_H);
-	al_set_target_bitmap(confirmBox);
-	al_draw_rectangle(0, 0, SQUARE * 16,CONFIRMBOX_H, al_color_name(CONFIRMCOLOR), 10);
-	al_draw_text(font, al_color_name("white"), 16 *SQUARE /2.0, CONFIRMBOX_H /2.0, ALLEGRO_ALIGN_CENTRE, "Confirm");
-
-	vector <ALLEGRO_BITMAP * > bitmaps;
-
-	for (int i = 0; i < 10; ++i) {
-		bitmaps.push_back(al_create_bitmap(SQUARE, SQUARE));
-		al_set_target_bitmap(bitmaps[i]);
-		al_draw_rectangle(0, 0, SQUARE, SQUARE, al_color_name("white"), 5);
-		al_draw_text(font, al_color_name("white"), SQUARE / 2.0, SQUARE / 2.0 - al_get_font_line_height(font)/2.0, ALLEGRO_ALIGN_CENTRE, to_string(i).c_str());
-	}
-
-	al_set_target_bitmap(curr);
-
-	readFile("file.cvs", matrix);
-
-	bool quit = false;
-	bool save = false;
-
-	while (!quit) {
-
-		ALLEGRO_EVENT ev;
-		int col;
-		int row;
-
-		if (al_get_next_event(allegro.getEventQueue(), &ev) ){
-			switch (ev.type) {
-			case ALLEGRO_EVENT_DISPLAY_CLOSE:
-				quit = true;
-			case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-				col = getClick(ev.mouse.x, COLS, SQUARE);
-				row = getClick(ev.mouse.y, ROWS, SQUARE);
-
-				if (col != ERROR1 && row != ERROR1) {
-
-					ALLEGRO_MOUSE_STATE state;
-
-					al_get_mouse_state(&state);
-					if ((state.buttons & 1 ) ) {			// Boton Izquierdo
-						if (matrix[row][col] < MAXNUM)
-							matrix[row][col]++;
-						else
-							matrix[row][col] = 0;
-					}
-					else if ((state.buttons & 2)) {			// Boton Derecho
-						if (matrix[row][col] > 0)
-							matrix[row][col]--;
-						else
-							matrix[row][col] = MAXNUM;
-
-					}
+	do {
+		CursesClass curses;
+		switch (selectMode(curses)) {
+		case READ:
+			fileName = "stages/" + askForFile(curses);
+			if (fileExists(fileName.c_str())) {
+				readFile(fileName.c_str(), matrix);
+				leave = true;
+				valid = true;
+			}
+			else fileDoesntExist(curses, fileName);
+				break;
+		case WRITE:
+			fileName = "stages/" +askForFile(curses);
+			if (fileExists(fileName.c_str()))
+				if (askToOverwrite(curses)) {
+					valid = true;
+					leave = true;
 				}
-				else
-				{
+				else {
+					leave = true;
+					valid = false;
+				}
+			else
+				valid = true;
+				leave = true;
+			break;
+		}
+	}while (!leave);
+
+
+
+	if (valid) {
+
+		AllegroClass allegro(16 * SQUARE, 12 * SQUARE + CONFIRMBOX_H, 60.0);
+		ALLEGRO_FONT * font = allegro.loadFont("mont.ttf", 50);
+
+		ALLEGRO_BITMAP * curr = al_get_target_bitmap();
+		ALLEGRO_BITMAP * confirmBox = al_create_bitmap(16 * SQUARE, CONFIRMBOX_H);
+		al_set_target_bitmap(confirmBox);
+		al_draw_rectangle(0, 0, SQUARE * 16, CONFIRMBOX_H, al_color_name(CONFIRMCOLOR), 10);
+		al_draw_text(font, al_color_name("white"), 16 * SQUARE / 2.0, CONFIRMBOX_H / 2.0, ALLEGRO_ALIGN_CENTRE, "Confirm");
+
+		vector <ALLEGRO_BITMAP * > bitmaps;
+
+		for (int i = 0; i < 10; ++i) {
+			bitmaps.push_back(al_create_bitmap(SQUARE, SQUARE));
+
+			//Si en algun momento le agrego imagenes, tengo que borrar esta parte y cambiar el create bitmap por un load bitmap, y darle un vector de
+			// strings. Se podria hacer todos los tama;os variables y que los ponga el usuario pero deberia hacerlo todo dinamico y paja
+			al_set_target_bitmap(bitmaps[i]);
+			al_draw_rectangle(0, 0, SQUARE, SQUARE, al_color_name("white"), 5);
+			al_draw_text(font, al_color_name("white"), SQUARE / 2.0, SQUARE / 2.0 - al_get_font_line_height(font) / 2.0, ALLEGRO_ALIGN_CENTRE, to_string(i).c_str());
+		}
+
+		al_set_target_bitmap(curr);
+
+		bool quit = false;
+		bool save = false;
+
+		while (!quit) {
+
+			ALLEGRO_EVENT ev;
+			int col;
+			int row;
+
+			if (al_get_next_event(allegro.getEventQueue(), &ev)) {
+				switch (ev.type) {
+				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					quit = true;
-					save = true;
-				}
+				case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+					col = getClick(ev.mouse.x, COLS, SQUARE);
+					row = getClick(ev.mouse.y, ROWS, SQUARE);
 
-				
-				break;
-			case ALLEGRO_EVENT_TIMER:
-				al_clear_to_color(al_color_name("black"));
-				for (int i = 0; i < ROWS ; i++)
-					for (int a = 0; a < COLS; a++) {	 
-						al_draw_bitmap(bitmaps[matrix[i][a]], a * SQUARE, i * SQUARE, 0);
+					if (col != ERROR1 && row != ERROR1) {
+
+						ALLEGRO_MOUSE_STATE state;
+
+						al_get_mouse_state(&state);
+						if ((state.buttons & 1)) {			// Boton Izquierdo
+							if (matrix[row][col] < MAXNUM)
+								matrix[row][col]++;
+							else
+								matrix[row][col] = 0;
+						}
+						else if ((state.buttons & 2)) {			// Boton Derecho
+							if (matrix[row][col] > 0)
+								matrix[row][col]--;
+							else
+								matrix[row][col] = MAXNUM;
+
+						}
 					}
-				al_draw_bitmap(confirmBox,0,ROWS *SQUARE,0);
-				al_flip_display();
-				break;
+					else
+					{
+						quit = true;
+						save = true;
+					}
 
+
+					break;
+				case ALLEGRO_EVENT_TIMER:
+					al_clear_to_color(al_color_name("black"));
+					for (int i = 0; i < ROWS; i++)
+						for (int a = 0; a < COLS; a++) 
+							al_draw_scaled_bitmap(bitmaps[matrix[i][a]], 0, 0, al_get_bitmap_width(bitmaps[matrix[i][a]]), al_get_bitmap_height(bitmaps[matrix[i][a]]), a * SQUARE, i *SQUARE,SQUARE,SQUARE,0);
+					al_draw_bitmap(confirmBox, 0, ROWS *SQUARE, 0);
+					al_flip_display();
+					break;
+
+				}
 			}
 		}
+		if (save)
+			writeFile(fileName.c_str(), matrix);
+
+		for (ALLEGRO_BITMAP * bitmap : bitmaps)
+			al_destroy_bitmap(bitmap);
+
+		al_destroy_bitmap(confirmBox);
 	}
-	if (save)
-		writeFile("file.cvs",matrix);
-
-	for (ALLEGRO_BITMAP * bitmap : bitmaps)
-		al_destroy_bitmap(bitmap);
-
-	al_destroy_bitmap(confirmBox);
 
 
 	return 0;
