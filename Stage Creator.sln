@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stage Creator", "Stage Creator\Stage Creator.vcxproj", "{61737530-CA98-4F62-95B4-72AA82A49281}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Debug|x64.ActiveCfg = Debug|x64
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Debug|x64.Build.0 = Debug|x64
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Debug|x86.ActiveCfg = Debug|Win32
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Debug|x86.Build.0 = Debug|Win32
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Release|x64.ActiveCfg = Release|x64
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Release|x64.Build.0 = Release|x64
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Release|x86.ActiveCfg = Release|Win32
+		{61737530-CA98-4F62-95B4-72AA82A49281}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E19C8A6E-E048-436C-8870-A16BF86A91CE}
+	EndGlobalSection
+EndGlobal
