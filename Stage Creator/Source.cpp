@@ -70,6 +70,7 @@ int main() {
 
 
 	if (valid) {
+		const char * color[] = { "blue","green", "brown","Red","hotpink", "black" ,"black" ,"black" ,"black" ,"black" };
 
 		AllegroClass allegro(16 * SQUARE, 12 * SQUARE + CONFIRMBOX_H, 60.0);
 		ALLEGRO_FONT * font = allegro.loadFont("mont.ttf", 50);
@@ -88,7 +89,7 @@ int main() {
 			//Si en algun momento le agrego imagenes, tengo que borrar esta parte y cambiar el create bitmap por un load bitmap, y darle un vector de
 			// strings. Se podria hacer todos los tama;os variables y que los ponga el usuario pero deberia hacerlo todo dinamico y paja
 			al_set_target_bitmap(bitmaps[i]);
-			al_draw_rectangle(0, 0, SQUARE, SQUARE, al_color_name("white"), 5);
+			al_draw_filled_rectangle(0, 0, SQUARE, SQUARE, al_color_name(color[i]));
 			al_draw_text(font, al_color_name("white"), SQUARE / 2.0, SQUARE / 2.0 - al_get_font_line_height(font) / 2.0, ALLEGRO_ALIGN_CENTRE, to_string(i).c_str());
 		}
 
