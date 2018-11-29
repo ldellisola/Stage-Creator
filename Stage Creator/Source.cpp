@@ -1,3 +1,6 @@
+
+
+
 #include "AllegroClass.h"
 #include "CursesClass.h"
 #include "UserHandler.h"
@@ -18,13 +21,31 @@
 #define ROWS (12)
 #define COLS (16)
 
-#define MAXNUM (9)
+#define MAXNUM (6)
+
+
+#include <map>
 
 int getClick(float pos, int ammount, int size);
 void writeFile(const char * fileName, int matrix[ROWS][COLS]);
 void readFile(const char * fileName, int matrix[ROWS][COLS]);
 
+
+std::map<int,char> Translator;
+
+
+
+
+
+
 int main() {
+
+	Translator[0] = 'E';
+	Translator[1] = 'F';
+	Translator[2] = 'T';
+	Translator[3] = 'P';
+	Translator[4] = 'G';
+	Translator[5] = 'C';
 
 	int matrix[ROWS][COLS];
 
@@ -70,9 +91,10 @@ int main() {
 
 
 	if (valid) {
-		const char * color[] = { "blue","green", "brown","Red","hotpink", "black" ,"black" ,"black" ,"black" ,"black" };
+		const char * color[] = { "BackgroundSprite.png","GroundSprite.png", "PS1.png","PGS1.png","GFS1.png", "CGS1.png" };
 
 		AllegroClass allegro(16 * SQUARE, 12 * SQUARE + CONFIRMBOX_H, 60.0);
+		
 		ALLEGRO_FONT * font = allegro.loadFont("mont.ttf", 50);
 
 		ALLEGRO_BITMAP * curr = al_get_target_bitmap();
@@ -83,14 +105,14 @@ int main() {
 
 		vector <ALLEGRO_BITMAP * > bitmaps;
 
-		for (int i = 0; i < 10; ++i) {
-			bitmaps.push_back(al_create_bitmap(SQUARE, SQUARE));
+		for (int i = 0; i < 6; ++i) {
+			bitmaps.push_back(al_load_bitmap(color[i]));
 
 			//Si en algun momento le agrego imagenes, tengo que borrar esta parte y cambiar el create bitmap por un load bitmap, y darle un vector de
 			// strings. Se podria hacer todos los tama;os variables y que los ponga el usuario pero deberia hacerlo todo dinamico y paja
-			al_set_target_bitmap(bitmaps[i]);
-			al_draw_filled_rectangle(0, 0, SQUARE, SQUARE, al_color_name(color[i]));
-			al_draw_text(font, al_color_name("white"), SQUARE / 2.0, SQUARE / 2.0 - al_get_font_line_height(font) / 2.0, ALLEGRO_ALIGN_CENTRE, to_string(i).c_str());
+			//al_set_target_bitmap(bitmaps[i]);
+			//al_draw_filled_rectangle(0, 0, SQUARE, SQUARE, al_color_name(color[i]));
+			//al_draw_text(font, al_color_name("white"), SQUARE / 2.0, SQUARE / 2.0 - al_get_font_line_height(font) / 2.0, ALLEGRO_ALIGN_CENTRE, to_string(i).c_str());
 		}
 
 		al_set_target_bitmap(curr);
@@ -118,7 +140,7 @@ int main() {
 
 						al_get_mouse_state(&state);
 						if ((state.buttons & 1)) {			// Boton Izquierdo
-							if (matrix[row][col] < MAXNUM)
+							if (matrix[row][col] < MAXNUM-1)
 								matrix[row][col]++;
 							else
 								matrix[row][col] = 0;
@@ -127,7 +149,7 @@ int main() {
 							if (matrix[row][col] > 0)
 								matrix[row][col]--;
 							else
-								matrix[row][col] = MAXNUM;
+								matrix[row][col] = MAXNUM-1;
 
 						}
 					}
@@ -179,12 +201,14 @@ void writeFile(const char * fileName, int matrix[ROWS][COLS]) {
 
 	ofstream output;
 
+	
+
 	output.open(fileName, fstream::out);
 
 	for (int i = 0; i < ROWS; i++) {
 		for (int a = 0; a < COLS; a++) {
-			output.put(matrix[i][a] + '0');
-			output.put(';');
+			output.put(Translator[matrix[i][a]]);
+			output.put(',');
 		}
 		output.put('\n');
 	}
@@ -201,9 +225,9 @@ void readFile(const char * fileName, int matrix[ROWS][COLS]) {
 	while (!leave && !input.eof()) {
 		int a = input.get();
 
-		if (a == ';');
-		else if (isdigit(a)) {
-			matrix[row][col++] = a - '0';
+		if (a == ',');
+		else if (isalpha(a)) {
+			matrix[row][col++] = a;
 		}
 		else if (a == '\n') {
 			row++;

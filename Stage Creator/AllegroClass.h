@@ -8,7 +8,7 @@
 
 #define FONT_C
 //#define AUDIO_C
-//#define IMAGE_C
+#define IMAGE_C
 #define PRIMITIVES_C
 #define COLOR_C
 
